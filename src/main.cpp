@@ -1,6 +1,6 @@
 #include <raylib.h>
 
-#include "Gradient.hpp"
+#include "ColorMap.hpp"
 #include "Rgb.hpp"
 
 static constexpr int width = 1600;
@@ -19,7 +19,7 @@ int main() {
 
         for (usize i = 0; i < nSteps; ++i) {
             const float x = static_cast<float>(i) / nSteps;
-            DrawRectangle(i * step, 0, step, height, Gradient::get(x).opaque());
+            DrawRectangle(i * step, 0, step, height, ColorMap::get(x).opaque());
         }
 
         EndDrawing();
