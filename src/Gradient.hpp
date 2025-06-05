@@ -5,13 +5,13 @@
 
 #include "Rgb.hpp"
 
-u8 lerpU8(u8 start, u8 end, float x) {
+static u8 lerpU8(u8 start, u8 end, float x) {
     const float asFloat =
         static_cast<float>(start) * (1.0f - x) + static_cast<float>(end) * x;
     return trunc(asFloat) > 255.0f ? 255 : trunc(asFloat);
 }
 
-Rgb lerpRgb(Rgb start, Rgb end, float x) {
+static Rgb lerpRgb(Rgb start, Rgb end, float x) {
     return {
         lerpU8(start.red, end.red, x),
         lerpU8(start.green, end.green, x),
