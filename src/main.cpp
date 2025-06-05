@@ -12,7 +12,7 @@ int main() {
 
     while (!WindowShouldClose()) {
         BeginDrawing();
-        ClearBackground(catpuccin::lavender);
+        ClearBackground(catpuccin::lavender.opaque());
         EndDrawing();
     }
 
