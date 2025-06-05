@@ -1,6 +1,6 @@
 #include <raylib.h>
 
-#include "catpuccin.hpp"
+#include "Rgb.hpp"
 
 static constexpr int width = 1600;
 static constexpr int height = 900;
