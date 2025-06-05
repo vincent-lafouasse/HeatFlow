@@ -1,5 +1,6 @@
 #include <raylib.h>
 
+#include "Gradient.hpp"
 #include "Rgb.hpp"
 
 static constexpr int width = 1600;
@@ -12,7 +13,15 @@ int main() {
 
     while (!WindowShouldClose()) {
         BeginDrawing();
-        ClearBackground(catpuccin::Lavender.opaque());
+        ClearBackground(catpuccin::DarkGray.opaque());
+        constexpr usize nSteps = 9;
+        constexpr int step = width / nSteps;
+
+        for (usize i = 0; i < nSteps; ++i) {
+            const float x = static_cast<float>(i) / nSteps;
+            DrawRectangle(i * step, 0, step, height, Gradient::get(x).opaque());
+        }
+
         EndDrawing();
     }
 
