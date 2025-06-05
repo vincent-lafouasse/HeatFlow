@@ -32,7 +32,7 @@ static Rgb lerpRgb(Rgb start, Rgb end, float x) {
 class Gradient {
    public:
     [[nodiscard]] static Rgb get(float x) {
-        const float floatIndex = x / (colors.size() - 1);
+        const float floatIndex = x * (colors.size() - 1);
         const usize index = static_cast<usize>(std::trunc(floatIndex));
         const float offset = floatIndex - index;
         const Rgb low = colors[index];

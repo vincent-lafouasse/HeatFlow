@@ -14,7 +14,7 @@ int main() {
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(catpuccin::DarkGray.opaque());
-        constexpr usize nSteps = 20;
+        constexpr usize nSteps = 200;
         constexpr int step = width / nSteps;
 
         for (usize i = 0; i < nSteps; ++i) {
