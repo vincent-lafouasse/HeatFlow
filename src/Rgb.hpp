@@ -30,10 +30,13 @@ struct Rgb {
 
 namespace catpuccin {
 [[maybe_unused]] static constexpr Rgb DarkGray{24, 24, 37};
+
 [[maybe_unused]] static constexpr Rgb Rosewater = Rgb::fromHex(0xf5e0dc);
 [[maybe_unused]] static constexpr Rgb Flamingo = Rgb::fromHex(0xf2cdcd);
 [[maybe_unused]] static constexpr Rgb Pink = Rgb::fromHex(0xf5c2e7);
+[[maybe_unused]] static constexpr Rgb Lavender = Rgb::fromHex(0xb4befe);
 [[maybe_unused]] static constexpr Rgb Mauve = Rgb::fromHex(0xcba6f7);
+
 [[maybe_unused]] static constexpr Rgb Red = Rgb::fromHex(0xf38ba8);
 [[maybe_unused]] static constexpr Rgb Maroon = Rgb::fromHex(0xeba0ac);
 [[maybe_unused]] static constexpr Rgb Peach = Rgb::fromHex(0xfab387);
@@ -43,5 +46,4 @@ namespace catpuccin {
 [[maybe_unused]] static constexpr Rgb Sky = Rgb::fromHex(0x89dceb);
 [[maybe_unused]] static constexpr Rgb Sapphire = Rgb::fromHex(0x74c7ec);
 [[maybe_unused]] static constexpr Rgb Blue = Rgb::fromHex(0x89b4fa);
-[[maybe_unused]] static constexpr Rgb Lavender = Rgb::fromHex(0xb4befe);
 }  // namespace catpuccin
