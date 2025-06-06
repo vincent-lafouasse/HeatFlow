@@ -23,12 +23,8 @@ int main() {
         ClearBackground(catpuccin::DarkGray.opaque());
 
         for (usize col = 0; col < gridWidth; ++col) {
-            const float horizontalAdvancement =
-                static_cast<float>(col) / gridWidth;
-
             for (usize row = 0; row < gridHeight; ++row) {
-                const float x = (row % 2) ? horizontalAdvancement
-                                          : 1.0f - horizontalAdvancement;
+                const float x = static_cast<float>(col + row) / (gridHeight + gridWidth);
                 DrawRectangle(col * gridSize, row * gridSize, gridSize,
                               gridSize, cmap.get(x).opaque());
             }
