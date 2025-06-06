@@ -11,7 +11,7 @@ int main() {
     InitWindow(width, height, "hi");
     SetTargetFPS(targetFps);
 
-    const ColorMap cmap = ColorMap::Viridis();
+    const ColorMap cmap = ColorMap::Inferno();
 
     while (!WindowShouldClose()) {
         BeginDrawing();

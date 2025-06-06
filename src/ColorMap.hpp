@@ -9,6 +9,7 @@ class ColorMap {
     Rgb get(float x) const;
     static ColorMap Catpuccin();
     static ColorMap Viridis();
+    static ColorMap Inferno();
 
    private:
     ColorMap(const std::vector<Rgb>& c);
