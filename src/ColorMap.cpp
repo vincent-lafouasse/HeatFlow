@@ -1,5 +1,7 @@
 #include "ColorMap.hpp"
 
+#include <cmath>
+
 static u8 u8FromFloat(float x) {
     if (x > 255.0f) {
         return 255;
@@ -24,11 +26,23 @@ static Rgb lerpRgb(Rgb start, Rgb end, float x) {
     };
 }
 
-Rgb ColorMap::get(float x) {
+Rgb ColorMap::get(float x) const {
     const float floatIndex = x * (colors.size() - 1);
     const usize index = static_cast<usize>(std::trunc(floatIndex));
     const float offset = floatIndex - index;
     const Rgb low = colors[index];
     const Rgb high = colors[index + 1];
     return lerpRgb(low, high, offset);
+}
+
+ColorMap::ColorMap(const std::vector<Rgb>& c) : colors(c) {}
+
+ColorMap ColorMap::Catpuccin() {
+    std::vector<Rgb> colors = {
+        catpuccin::Red,    catpuccin::Maroon,   catpuccin::Peach,
+        catpuccin::Yellow, catpuccin::Green,    catpuccin::Teal,
+        catpuccin::Sky,    catpuccin::Sapphire, catpuccin::Blue,
+    };
+
+    return ColorMap(colors);
 }

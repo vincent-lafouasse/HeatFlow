@@ -1,18 +1,16 @@
 #pragma once
 
-#include <array>
-#include <cmath>
+#include <vector>
 
 #include "Rgb.hpp"
 
 class ColorMap {
    public:
-    static Rgb get(float x);
+    Rgb get(float x) const;
+    static ColorMap Catpuccin();
 
    private:
-    static constexpr std::array<Rgb, 9> colors{
-        catpuccin::Red,    catpuccin::Maroon,   catpuccin::Peach,
-        catpuccin::Yellow, catpuccin::Green,    catpuccin::Teal,
-        catpuccin::Sky,    catpuccin::Sapphire, catpuccin::Blue,
-    };
+    ColorMap(const std::vector<Rgb>& c);
+
+    std::vector<Rgb> colors;
 };

@@ -11,6 +11,8 @@ int main() {
     InitWindow(width, height, "hi");
     SetTargetFPS(targetFps);
 
+    const ColorMap cmap = ColorMap::Catpuccin();
+
     while (!WindowShouldClose()) {
         BeginDrawing();
         ClearBackground(catpuccin::DarkGray.opaque());
@@ -19,7 +21,7 @@ int main() {
 
         for (usize i = 0; i < nSteps; ++i) {
             const float x = static_cast<float>(i) / nSteps;
-            DrawRectangle(i * step, 0, step, height, ColorMap::get(x).opaque());
+            DrawRectangle(i * step, 0, step, height, cmap.get(x).opaque());
         }
 
         EndDrawing();
