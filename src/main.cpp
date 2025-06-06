@@ -20,10 +20,16 @@ static constexpr usize meshHeight = gridHeight * meshSubdivision;
 
 struct Tile {
     enum class Kind {
+        Insulator,
         Thermostat,
         Conductor,
-        Insulator,
     };
+
+    static Tile Thermostat(u8 temp) { return {Kind::Thermostat, temp}; }
+
+    static Tile Conductor(u8 temp) { return {Kind::Conductor, temp}; }
+
+    static Tile Insulator() { return {Kind::Insulator, 0}; }
 
     Kind kind;
     uint8_t temperature;
