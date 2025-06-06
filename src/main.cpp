@@ -133,7 +133,7 @@ struct Grid {
 
     Grid(const std::vector<std::vector<Tile>>& t) : tiles(t), laplacian() {
         for (usize col = 0; col < gridWidth; ++col) {
-            std::vector<float> line(0, gridWidth);
+            std::vector<float> line(gridWidth, 0);
             laplacian.push_back(line);
         }
     }
@@ -141,12 +141,26 @@ struct Grid {
     void computeLaplacian() {
         for (usize col = 0; col < gridWidth; ++col) {
             for (usize row = 0; row < gridHeight; ++row) {
-                computeLaplacianAt(col, row);
+                laplacian[row][col] = computeLaplacianAt(col, row);
             }
         }
     }
 
-    void update() { computeLaplacian(); }
+    void update() {
+        computeLaplacian();
+        constexpr float conductivity = 1.0f;
+        constexpr float dt = 0.1f;
+
+        for (usize col = 0; col < gridWidth; ++col) {
+            for (usize row = 0; row < gridHeight; ++row) {
+                Tile& tile = tiles[row][col];
+
+                if (tile.conducts()) {
+                    tile.temperature += conductivity * laplacian[row][col] * dt;
+                }
+            }
+        }
+    }
 
     float computeLaplacianAt(usize col, usize row) {
         if (!tiles[row][col].conducts()) {
