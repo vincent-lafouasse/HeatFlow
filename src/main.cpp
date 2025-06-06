@@ -1,4 +1,5 @@
 #include <raylib.h>
+#include <cstdint>
 
 #include "ColorMap.hpp"
 #include "Rgb.hpp"
@@ -16,6 +17,22 @@ static constexpr usize gridSubdivision = 4;
 static constexpr usize gridStep = gridSize / gridSubdivision;
 static constexpr usize width = gridWidth * gridSubdivision;
 static constexpr usize height = gridHeight * gridSubdivision;
+
+struct Tile {
+    enum class Kind {
+        Thermostat,
+        Conductor,
+        Insulator,
+    };
+
+    Kind kind;
+    uint8_t temperature;
+    /* uint8_t conductivity; */
+};
+
+struct Grid {
+    std::array<std::array<Tile, gridWidth>, gridHeight> tiles;
+};
 
 int main() {
     InitWindow(screenWidth, screenHeight, "hi");
