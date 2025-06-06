@@ -1,6 +1,7 @@
 #include <raylib.h>
 #include <cassert>
 #include <cstdint>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
@@ -20,6 +21,11 @@ static constexpr usize meshSubdivision = 4;
 static constexpr usize meshStep = gridSize / meshSubdivision;
 static constexpr usize meshWidth = gridWidth * meshSubdivision;
 static constexpr usize meshHeight = gridHeight * meshSubdivision;
+
+struct Look {
+    ColorMap cmap;
+    bool displayFps;
+};
 
 struct Tile {
     enum class Kind {
@@ -109,7 +115,7 @@ struct Grid {
         return Grid(tiles);
     }
 
-    void render(const ColorMap& cmap) const {
+    void render(const Look& look) const {
         BeginDrawing();
         ClearBackground(catpuccin::DarkGray.opaque());
 
@@ -123,9 +129,13 @@ struct Grid {
                 } else if (tile.kind == Tile::Kind::Conductor) {
                     const float temp = tile.temperature / 255.0f;
                     DrawRectangle(col * gridSize, row * gridSize, gridSize,
-                                  gridSize, cmap.get(temp).opaque());
+                                  gridSize, look.cmap.get(temp).opaque());
                 }
             }
+        }
+
+        if (look.displayFps) {
+            DrawFPS(0, 0);
         }
 
         EndDrawing();
@@ -229,11 +239,24 @@ int main() {
     SetTargetFPS(targetFps);
 
     Grid grid = Grid::funnel();
-    const ColorMap cmap = ColorMap::Inferno();
+    Look look = {
+        .cmap = ColorMap::Inferno(),
+        .displayFps = true,
+    };
+
+    std::unordered_set<int> keys;
 
     while (!WindowShouldClose()) {
+        constexpr int space = KEY_SPACE;
+        if (IsKeyDown(space) && !keys.contains(space)) {
+            look.displayFps = !look.displayFps;
+            keys.insert(space);
+        } else if (IsKeyUp(KEY_SPACE) && keys.contains(space)) {
+            keys.erase(space);
+        }
+
         grid.update();
-        grid.render(cmap);
+        grid.render(look);
     }
 
     CloseWindow();
