@@ -15,7 +15,8 @@ static constexpr usize gridWidth = 15;
 static constexpr usize gridHeight = 10;
 
 static constexpr int screenWidth = gridWidth * gridSize;
-static constexpr int screenHeight = gridHeight * gridSize;
+static constexpr int scalePanelHeight = 64;
+static constexpr int screenHeight = gridHeight * gridSize + scalePanelHeight;
 
 static constexpr usize meshSubdivision = 4;
 static constexpr usize meshStep = gridSize / meshSubdivision;
@@ -115,6 +116,17 @@ struct Grid {
         return Grid(tiles);
     }
 
+    void drawScaleBar(const Look& look) const {
+        static constexpr int nSteps = 120;
+        static constexpr int scaleBarStep = screenWidth / nSteps;
+
+        for (int i = 0; i < nSteps; ++i) {
+            const float x = static_cast<float>(i) / (nSteps - 1);
+            DrawRectangle(i * scaleBarStep, gridHeight * gridSize, scaleBarStep,
+                          scalePanelHeight, look.cmap.get(x).opaque());
+        }
+    }
+
     void render(const Look& look) const {
         BeginDrawing();
         ClearBackground(catpuccin::DarkGray.opaque());
@@ -137,6 +149,8 @@ struct Grid {
         if (look.displayFps) {
             DrawFPS(0, 0);
         }
+
+        this->drawScaleBar(look);
 
         EndDrawing();
     }
@@ -240,7 +254,7 @@ int main() {
 
     Grid grid = Grid::funnel();
     Look look = {
-        .cmap = ColorMap::Inferno(),
+        .cmap = ColorMap::Viridis(),
         .displayFps = true,
     };
 
