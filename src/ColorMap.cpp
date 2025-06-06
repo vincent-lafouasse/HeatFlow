@@ -8,7 +8,7 @@ static u8 u8FromFloat(float x) {
     } else if (x < 0.0f) {
         return 0;
     } else {
-        return static_cast<u8>(std::trunc(x));
+        return static_cast<u8>(std::floor(x));
     }
 }
 
@@ -27,9 +27,17 @@ static Rgb lerpRgb(Rgb start, Rgb end, float x) {
 }
 
 Rgb ColorMap::get(float x) const {
+    if (x <= 0.0f) {
+        return colors.front();
+    }
+    if (x >= 1.0f) {
+        return colors.back();
+    }
+
     const float floatIndex = x * (colors.size() - 1);
-    const usize index = static_cast<usize>(std::trunc(floatIndex));
+    const usize index = static_cast<usize>(std::floor(floatIndex));
     const float offset = floatIndex - index;
+
     const Rgb low = colors[index];
     const Rgb high = colors[index + 1];
     return lerpRgb(low, high, offset);
