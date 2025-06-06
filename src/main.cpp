@@ -106,25 +106,13 @@ struct Grid {
         return Grid(tiles);
     }
 
-    Grid(const std::vector<std::vector<Tile>>& t) : tiles(t) {}
-
-    std::vector<std::vector<Tile>> tiles;
-};
-
-int main() {
-    InitWindow(screenWidth, screenHeight, "hi");
-    SetTargetFPS(targetFps);
-
-    Grid grid = Grid::funnel();
-    const ColorMap cmap = ColorMap::Inferno();
-
-    while (!WindowShouldClose()) {
+    void render(const ColorMap& cmap) const {
         BeginDrawing();
         ClearBackground(catpuccin::DarkGray.opaque());
 
         for (usize col = 0; col < gridWidth; ++col) {
             for (usize row = 0; row < gridHeight; ++row) {
-                const Tile tile = grid.tiles[row][col];
+                const Tile tile = tiles[row][col];
 
                 if (tile.kind == Tile::Kind::Insulator) {
                     DrawRectangle(col * gridSize, row * gridSize, gridSize,
@@ -138,6 +126,22 @@ int main() {
         }
 
         EndDrawing();
+    }
+
+    Grid(const std::vector<std::vector<Tile>>& t) : tiles(t) {}
+
+    std::vector<std::vector<Tile>> tiles;
+};
+
+int main() {
+    InitWindow(screenWidth, screenHeight, "hi");
+    SetTargetFPS(targetFps);
+
+    Grid grid = Grid::funnel();
+    const ColorMap cmap = ColorMap::Inferno();
+
+    while (!WindowShouldClose()) {
+        grid.render(cmap);
     }
 
     CloseWindow();
