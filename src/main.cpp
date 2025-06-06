@@ -1,6 +1,7 @@
 #include <raylib.h>
 #include <cassert>
 #include <cstdint>
+#include <utility>
 #include <vector>
 
 #include "ColorMap.hpp"
@@ -29,12 +30,14 @@ struct Tile {
 
     /* static Tile Thermostat(u8 temp) { return {Kind::Thermostat, temp}; } */
 
-    static Tile Conductor(u8 temp) { return {Kind::Conductor, temp}; }
+    static Tile Conductor(float temp) { return {Kind::Conductor, temp}; }
 
     static Tile Insulator() { return {Kind::Insulator, 0}; }
 
+    bool conducts() const { return kind == Kind::Conductor; }
+
     Kind kind;
-    uint8_t temperature;
+    float temperature;
     /* uint8_t conductivity; */
 };
 
@@ -128,9 +131,83 @@ struct Grid {
         EndDrawing();
     }
 
-    Grid(const std::vector<std::vector<Tile>>& t) : tiles(t) {}
+    Grid(const std::vector<std::vector<Tile>>& t) : tiles(t), laplacian() {
+        for (usize col = 0; col < gridWidth; ++col) {
+            std::vector<float> line(0, gridWidth);
+            laplacian.push_back(line);
+        }
+    }
+
+    void computeLaplacian() {
+        for (usize col = 0; col < gridWidth; ++col) {
+            for (usize row = 0; row < gridHeight; ++row) {
+                computeLaplacianAt(col, row);
+            }
+        }
+    }
+
+    void update() { computeLaplacian(); }
+
+    float computeLaplacianAt(usize col, usize row) {
+        if (!tiles[row][col].conducts()) {
+            return -1.0f;
+        }
+
+        const int col__ = static_cast<int>(col);
+        const int row__ = static_cast<int>(row);
+
+        std::pair<int, int> candidate1 = std::make_pair(col__, row__ + 1);
+        std::pair<int, int> candidate2 = std::make_pair(col__, row__ - 1);
+        std::pair<int, int> candidate3 = std::make_pair(col__ + 1, row__);
+        std::pair<int, int> candidate4 = std::make_pair(col__ - 1, row__);
+
+        auto temp = [&](const std::pair<int, int>& candidate) {
+            if (candidate.first < 0 ||
+                candidate.first > static_cast<int>(gridWidth)) {
+                return -1.0f;
+            }
+            if (candidate.second < 0 ||
+                candidate.second > static_cast<int>(gridHeight)) {
+                return -1.0f;
+            }
+
+            return tiles[candidate.second][candidate.first].temperature;
+        };
+
+        usize count = 0;
+        float mean = 0.0f;
+
+        float temperature;
+        temperature = temp(candidate1);
+        if (temperature >= 0.0f) {
+            ++count;
+            mean += temperature;
+        }
+        temperature = temp(candidate2);
+        if (temperature >= 0.0f) {
+            ++count;
+            mean += temperature;
+        }
+        temperature = temp(candidate3);
+        if (temperature >= 0.0f) {
+            ++count;
+            mean += temperature;
+        }
+        temperature = temp(candidate4);
+        if (temperature >= 0.0f) {
+            ++count;
+            mean += temperature;
+        }
+
+        if (count == 0) {
+            return 0.0f;
+        } else {
+            return (mean / count) - tiles[row][col].temperature;
+        }
+    }
 
     std::vector<std::vector<Tile>> tiles;
+    std::vector<std::vector<float>> laplacian;
 };
 
 int main() {
@@ -141,6 +218,7 @@ int main() {
     const ColorMap cmap = ColorMap::Inferno();
 
     while (!WindowShouldClose()) {
+        grid.update();
         grid.render(cmap);
     }
 
