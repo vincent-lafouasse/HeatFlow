@@ -46,3 +46,27 @@ ColorMap ColorMap::Catpuccin() {
 
     return ColorMap(colors);
 }
+
+ColorMap ColorMap::Viridis() {
+    std::vector<Rgb> colors = {
+        Rgb::fromHex(0xfde725), Rgb::fromHex(0xf1e51d), Rgb::fromHex(0xe5e419),
+        Rgb::fromHex(0xd8e219), Rgb::fromHex(0xcae11f), Rgb::fromHex(0xbade28),
+        Rgb::fromHex(0xaddc30), Rgb::fromHex(0xa0da39), Rgb::fromHex(0x93d741),
+        Rgb::fromHex(0x84d44b), Rgb::fromHex(0x77d153), Rgb::fromHex(0x6ccd5a),
+        Rgb::fromHex(0x60ca60), Rgb::fromHex(0x56c667), Rgb::fromHex(0x4ac16d),
+        Rgb::fromHex(0x40bd72), Rgb::fromHex(0x38b977), Rgb::fromHex(0x31b57b),
+        Rgb::fromHex(0x29af7f), Rgb::fromHex(0x25ab82), Rgb::fromHex(0x21a685),
+        Rgb::fromHex(0x1fa187), Rgb::fromHex(0x1e9d89), Rgb::fromHex(0x1f978b),
+        Rgb::fromHex(0x20928c), Rgb::fromHex(0x218e8d), Rgb::fromHex(0x23898e),
+        Rgb::fromHex(0x25838e), Rgb::fromHex(0x277f8e), Rgb::fromHex(0x297a8e),
+        Rgb::fromHex(0x2b758e), Rgb::fromHex(0x2d718e), Rgb::fromHex(0x2f6b8e),
+        Rgb::fromHex(0x31668e), Rgb::fromHex(0x34618d), Rgb::fromHex(0x365c8d),
+        Rgb::fromHex(0x39558c), Rgb::fromHex(0x3c508b), Rgb::fromHex(0x3e4a89),
+        Rgb::fromHex(0x404588), Rgb::fromHex(0x423f85), Rgb::fromHex(0x453882),
+        Rgb::fromHex(0x46327e), Rgb::fromHex(0x472c7a), Rgb::fromHex(0x482576),
+        Rgb::fromHex(0x481d6f), Rgb::fromHex(0x481769), Rgb::fromHex(0x471063),
+        Rgb::fromHex(0x46085c), Rgb::fromHex(0x440154),
+    };
+
+    return ColorMap(colors);
+}
