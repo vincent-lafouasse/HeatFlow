@@ -13,10 +13,10 @@ static constexpr usize gridHeight = 10;
 static constexpr int screenWidth = gridWidth * gridSize;
 static constexpr int screenHeight = gridHeight * gridSize;
 
-static constexpr usize gridSubdivision = 4;
-static constexpr usize gridStep = gridSize / gridSubdivision;
-static constexpr usize width = gridWidth * gridSubdivision;
-static constexpr usize height = gridHeight * gridSubdivision;
+static constexpr usize meshSubdivision = 4;
+static constexpr usize meshStep = gridSize / meshSubdivision;
+static constexpr usize meshWidth = gridWidth * meshSubdivision;
+static constexpr usize meshHeight = gridHeight * meshSubdivision;
 
 struct Tile {
     enum class Kind {
@@ -44,12 +44,12 @@ int main() {
         BeginDrawing();
         ClearBackground(catpuccin::DarkGray.opaque());
 
-        for (usize col = 0; col < width; ++col) {
-            for (usize row = 0; row < height; ++row) {
+        for (usize col = 0; col < meshWidth; ++col) {
+            for (usize row = 0; row < meshHeight; ++row) {
                 const float x =
-                    static_cast<float>(col + row) / (height + width);
-                DrawRectangle(col * gridStep, row * gridStep, gridStep,
-                              gridStep, cmap.get(x).opaque());
+                    static_cast<float>(col + row) / (meshHeight + meshWidth);
+                DrawRectangle(col * meshStep, row * meshStep, meshStep,
+                              meshStep, cmap.get(x).opaque());
             }
         }
 
