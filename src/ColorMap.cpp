@@ -47,9 +47,9 @@ ColorMap::ColorMap(const std::vector<Rgb>& c) : colors(c) {}
 
 ColorMap ColorMap::Catpuccin() {
     std::vector<Rgb> colors = {
-        catpuccin::Red,    catpuccin::Maroon,   catpuccin::Peach,
-        catpuccin::Yellow, catpuccin::Green,    catpuccin::Teal,
-        catpuccin::Sky,    catpuccin::Sapphire, catpuccin::Blue,
+        catpuccin::Blue,  catpuccin::Sapphire, catpuccin::Sky,
+        catpuccin::Teal,  catpuccin::Green,    catpuccin::Yellow,
+        catpuccin::Peach, catpuccin::Maroon,   catpuccin::Red,
     };
 
     return ColorMap(colors);

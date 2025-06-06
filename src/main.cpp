@@ -254,7 +254,7 @@ int main() {
 
     Grid grid = Grid::funnel();
     Look look = {
-        .cmap = ColorMap::Viridis(),
+        .cmap = ColorMap::Catpuccin(),
         .displayFps = true,
     };
 
