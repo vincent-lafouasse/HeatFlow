@@ -1,8 +1,9 @@
 #include <raylib.h>
 #include <cassert>
 #include <cstdint>
+#include <numeric>
+#include <ranges>
 #include <unordered_set>
-#include <utility>
 #include <vector>
 
 #include "ColorMap.hpp"
@@ -22,6 +23,11 @@ static constexpr usize meshSubdivision = 4;
 static constexpr usize meshStep = gridSize / meshSubdivision;
 static constexpr usize meshWidth = gridWidth * meshSubdivision;
 static constexpr usize meshHeight = gridHeight * meshSubdivision;
+
+struct IntVec2 {
+    int x;
+    int y;
+};
 
 struct Look {
     ColorMap cmap;
@@ -266,7 +272,7 @@ struct Mesh {
 
     void update() {
         computeLaplacian();
-        constexpr float conductivity = 50.0f;
+        constexpr float conductivity = 10.0f;
         constexpr float dt = 0.1f;
 
         for (usize col = 0; col < width; ++col) {
@@ -288,58 +294,38 @@ struct Mesh {
         const int col__ = static_cast<int>(col);
         const int row__ = static_cast<int>(row);
 
-        std::pair<int, int> candidate1 = std::make_pair(col__, row__ + 1);
-        std::pair<int, int> candidate2 = std::make_pair(col__, row__ - 1);
-        std::pair<int, int> candidate3 = std::make_pair(col__ + 1, row__);
-        std::pair<int, int> candidate4 = std::make_pair(col__ - 1, row__);
+        std::array<IntVec2, 4> neighbours{
+            IntVec2{col__, row__ + 1},
+            IntVec2{col__, row__ - 1},
+            IntVec2{col__ + 1, row__},
+            IntVec2{col__ - 1, row__},
+        };
 
-        auto temp = [&](const std::pair<int, int>& candidate) {
-            if (candidate.first < 0 ||
-                candidate.first >= static_cast<int>(width)) {
-                return -1.0f;
+        auto isValid = [&](const IntVec2& candidate) {
+            if (candidate.x < 0 || candidate.x >= static_cast<int>(width)) {
+                return false;
             }
-            if (candidate.second < 0 ||
-                candidate.second >= static_cast<int>(height)) {
-                return -1.0f;
+            if (candidate.y < 0 || candidate.y >= static_cast<int>(height)) {
+                return false;
             }
 
-            const Tile& tile = tiles[candidate.second][candidate.first];
-            if (tile.conducts()) {
-                return tile.temperature;
-            } else {
-                return -1.0f;
-            }
+            return tiles[candidate.y][candidate.x].conducts();
         };
 
         usize count = 0;
-        float mean = 0.0f;
-
-        float temperature;
-        temperature = temp(candidate1);
-        if (temperature >= 0.0f) {
+        float temperatureSum = 0.0f;
+        for (const auto& candidate : neighbours) {
+            if (!isValid(candidate)) {
+                continue;
+            }
             ++count;
-            mean += temperature;
-        }
-        temperature = temp(candidate2);
-        if (temperature >= 0.0f) {
-            ++count;
-            mean += temperature;
-        }
-        temperature = temp(candidate3);
-        if (temperature >= 0.0f) {
-            ++count;
-            mean += temperature;
-        }
-        temperature = temp(candidate4);
-        if (temperature >= 0.0f) {
-            ++count;
-            mean += temperature;
+            temperatureSum += tiles[candidate.y][candidate.x].temperature;
         }
 
         if (count == 0) {
             return 0.0f;
         } else {
-            return (mean / count) - tiles[row][col].temperature;
+            return (temperatureSum / count) - tiles[row][col].temperature;
         }
     }
 };
