@@ -146,6 +146,20 @@ struct Grid {
             }
         }
 
+        /*
+        for (usize col = 0; col < gridWidth; ++col) {
+            for (usize row = 0; row < gridHeight; ++row) {
+                const float l = laplacian[row][col];
+                const float scale = 1.0f;
+
+                const float x = scale * l + 0.5f;
+
+                DrawRectangle(col * gridSize, row * gridSize, gridSize,
+                              gridSize, look.cmap.get(x).opaque());
+            }
+        }
+                 */
+
         if (look.displayFps) {
             DrawFPS(0, 0);
         }
@@ -172,7 +186,7 @@ struct Grid {
 
     void update() {
         computeLaplacian();
-        constexpr float conductivity = 1.0f;
+        constexpr float conductivity = 10.0f;
         constexpr float dt = 0.1f;
 
         for (usize col = 0; col < gridWidth; ++col) {
@@ -201,15 +215,20 @@ struct Grid {
 
         auto temp = [&](const std::pair<int, int>& candidate) {
             if (candidate.first < 0 ||
-                candidate.first > static_cast<int>(gridWidth)) {
+                candidate.first >= static_cast<int>(gridWidth)) {
                 return -1.0f;
             }
             if (candidate.second < 0 ||
-                candidate.second > static_cast<int>(gridHeight)) {
+                candidate.second >= static_cast<int>(gridHeight)) {
                 return -1.0f;
             }
 
-            return tiles[candidate.second][candidate.first].temperature;
+            const Tile& tile = tiles[candidate.second][candidate.first];
+            if (tile.conducts()) {
+                return tile.temperature;
+            } else {
+                return -1.0f;
+            }
         };
 
         usize count = 0;
