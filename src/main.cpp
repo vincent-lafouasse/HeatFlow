@@ -294,7 +294,7 @@ struct Mesh {
         const int col__ = static_cast<int>(col);
         const int row__ = static_cast<int>(row);
 
-        std::array<IntVec2, 4> neighbours{
+        const std::array<IntVec2, 4> neighbours{
             IntVec2{col__, row__ + 1},
             IntVec2{col__, row__ - 1},
             IntVec2{col__ + 1, row__},
