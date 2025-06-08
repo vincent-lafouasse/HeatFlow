@@ -146,6 +146,82 @@ struct Grid {
             }
         }
 
+        if (look.displayFps) {
+            DrawFPS(0, 0);
+        }
+
+        this->drawScaleBar(look);
+
+        EndDrawing();
+    }
+
+    Grid(const std::vector<std::vector<Tile>>& t) : tiles(t) {
+        for (usize col = 0; col < gridWidth; ++col) {
+            std::vector<float> line(gridWidth, 0);
+        }
+    }
+
+    std::vector<std::vector<Tile>> tiles;
+};
+
+namespace poss {
+struct Mesh {
+    std::vector<std::vector<Tile>> tiles;
+    std::vector<std::vector<float>> laplacian;
+    usize width;
+    usize height;
+    usize tileSize;
+
+    static Mesh fromGrid(const Grid& grid, usize subdivision) {
+        const usize tileSize = gridSize / subdivision;
+        const usize width = subdivision * grid.tiles[0].size();
+        const usize height = subdivision * grid.tiles.size();
+
+        std::vector<std::vector<Tile>> tiles;
+        std::vector<std::vector<float>> laplacian;
+        tiles.reserve(height);
+        laplacian.reserve(height);
+
+        for (const auto& line : grid.tiles) {
+            std::vector<Tile> tileLine;
+            std::vector<float> laplacianLine;
+            tileLine.reserve(width);
+            laplacianLine.reserve(width);
+
+            for (const Tile& tile : line) {
+                for (usize _ = 0; _ < subdivision; ++_) {
+                    tileLine.push_back(tile);
+                    laplacianLine.push_back(0.0f);
+                }
+            }
+
+            for (usize _ = 0; _ < subdivision; ++_) {
+                tiles.push_back(tileLine);
+                laplacian.push_back(laplacianLine);
+            }
+        }
+
+        return {tiles, laplacian, width, height, tileSize};
+    }
+
+    void render(const Look& look) const {
+        BeginDrawing();
+        ClearBackground(catpuccin::DarkGray.opaque());
+
+        for (usize col = 0; col < width; ++col) {
+            for (usize row = 0; row < height; ++row) {
+                const Tile& tile = tiles[row][col];
+
+                Color color = catpuccin::DarkGray.opaque();
+                if (tile.kind == Tile::Kind::Conductor) {
+                    const float temp = tile.temperature / 255.0f;
+                    color = look.cmap.get(temp).opaque();
+                }
+                DrawRectangle(col * tileSize, row * tileSize, tileSize,
+                              tileSize, color);
+            }
+        }
+
         /*
         for (usize col = 0; col < gridWidth; ++col) {
             for (usize row = 0; row < gridHeight; ++row) {
@@ -169,16 +245,20 @@ struct Grid {
         EndDrawing();
     }
 
-    Grid(const std::vector<std::vector<Tile>>& t) : tiles(t), laplacian() {
-        for (usize col = 0; col < gridWidth; ++col) {
-            std::vector<float> line(gridWidth, 0);
-            laplacian.push_back(line);
+    void drawScaleBar(const Look& look) const {
+        static constexpr int nSteps = 120;
+        static constexpr int scaleBarStep = screenWidth / nSteps;
+
+        for (int i = 0; i < nSteps; ++i) {
+            const float x = static_cast<float>(i) / (nSteps - 1);
+            DrawRectangle(i * scaleBarStep, height * gridSize, scaleBarStep,
+                          scalePanelHeight, look.cmap.get(x).opaque());
         }
     }
 
     void computeLaplacian() {
-        for (usize col = 0; col < gridWidth; ++col) {
-            for (usize row = 0; row < gridHeight; ++row) {
+        for (usize col = 0; col < width; ++col) {
+            for (usize row = 0; row < height; ++row) {
                 laplacian[row][col] = computeLaplacianAt(col, row);
             }
         }
@@ -186,11 +266,11 @@ struct Grid {
 
     void update() {
         computeLaplacian();
-        constexpr float conductivity = 10.0f;
+        constexpr float conductivity = 50.0f;
         constexpr float dt = 0.1f;
 
-        for (usize col = 0; col < gridWidth; ++col) {
-            for (usize row = 0; row < gridHeight; ++row) {
+        for (usize col = 0; col < width; ++col) {
+            for (usize row = 0; row < height; ++row) {
                 Tile& tile = tiles[row][col];
 
                 if (tile.conducts()) {
@@ -215,11 +295,11 @@ struct Grid {
 
         auto temp = [&](const std::pair<int, int>& candidate) {
             if (candidate.first < 0 ||
-                candidate.first >= static_cast<int>(gridWidth)) {
+                candidate.first >= static_cast<int>(width)) {
                 return -1.0f;
             }
             if (candidate.second < 0 ||
-                candidate.second >= static_cast<int>(gridHeight)) {
+                candidate.second >= static_cast<int>(height)) {
                 return -1.0f;
             }
 
@@ -262,18 +342,17 @@ struct Grid {
             return (mean / count) - tiles[row][col].temperature;
         }
     }
-
-    std::vector<std::vector<Tile>> tiles;
-    std::vector<std::vector<float>> laplacian;
 };
+}  // namespace poss
 
 int main() {
     InitWindow(screenWidth, screenHeight, "hi");
     SetTargetFPS(targetFps);
 
     Grid grid = Grid::funnel();
+    poss::Mesh mesh = poss::Mesh::fromGrid(grid, 8);
     Look look = {
-        .cmap = ColorMap::Catpuccin(),
+        .cmap = ColorMap::Inferno(),
         .displayFps = true,
     };
 
@@ -288,8 +367,8 @@ int main() {
             keys.erase(space);
         }
 
-        grid.update();
-        grid.render(look);
+        mesh.render(look);
+        mesh.update();
     }
 
     CloseWindow();
