@@ -353,8 +353,12 @@ int main() {
             keys.erase(space);
         }
 
+        constexpr usize updatesPerFrame = 16;
+        for (usize _ = 0; _ < updatesPerFrame; _++) {
+            mesh.update();
+        }
+
         mesh.render(look);
-        mesh.update();
     }
 
     CloseWindow();
