@@ -255,10 +255,12 @@ struct Mesh {
         static constexpr int nSteps = 120;
         static constexpr int scaleBarStep = screenWidth / nSteps;
 
+        const int heightOffset = height * tileSize;
+
         for (int i = 0; i < nSteps; ++i) {
             const float x = static_cast<float>(i) / (nSteps - 1);
-            DrawRectangle(i * scaleBarStep, height * gridSize, scaleBarStep,
-                          scalePanelHeight, look.cmap.get(x).opaque());
+            DrawRectangle(i * scaleBarStep, heightOffset, scaleBarStep,
+                          scalePanelHeight, look.cmap.get(1.0f - x).opaque());
         }
     }
 
@@ -353,7 +355,7 @@ int main() {
             keys.erase(space);
         }
 
-        constexpr usize updatesPerFrame = 16;
+        constexpr usize updatesPerFrame = 25;
         for (usize _ = 0; _ < updatesPerFrame; _++) {
             mesh.update();
         }
